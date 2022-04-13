@@ -20,7 +20,7 @@ describe('File', () => {
             await load(FILE_TYPE.STORAGE);
         }
         catch (error: any) {
-            assert.match(error.message, /E1/);
+            assert.match(error.type, /E1/);
         }
     });
 
@@ -41,7 +41,7 @@ describe('File', () => {
             await load(FILE_TYPE.STORAGE);
         }
         catch (error: any) {
-            assert.match(error.message, /E2/);
+            assert.match(error.type, /E2/);
         }
     });
 });

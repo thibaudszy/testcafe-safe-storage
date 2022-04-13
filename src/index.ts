@@ -4,6 +4,8 @@ import {
 
 import CryptoContext from './crypto.js';
 
+import { LoadedDataInvalid } from './errors.js';
+
 
 interface Validator<T> {
     (a: unknown): a is T;
@@ -40,7 +42,7 @@ export default class SafeStorage<T> {
         const data = await this._safeLoad();
 
         if (!this.validator(data))
-            throw new Error('E0');
+            throw new LoadedDataInvalid();
 
         await this.save(data);
 

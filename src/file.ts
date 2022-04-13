@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import { MultipleSavedDataNotDetected, SavedDataNotDetected } from './errors';
 
 
 async function ensureDir (filename: string): Promise<void> {
@@ -33,10 +34,10 @@ async function detectName (type: FILE_TYPE): Promise<string> {
     const names = await detectNames(type);
 
     if (!names.length)
-        throw new Error('E1');
+        throw new SavedDataNotDetected();
 
     if (names.length > 1)
-        throw new Error('E2');
+        throw new MultipleSavedDataNotDetected();
 
     return names[0];
 }

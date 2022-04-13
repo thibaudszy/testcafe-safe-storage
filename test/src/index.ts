@@ -25,7 +25,7 @@ describe('Storage', function () {
             throw new Error('This should not be executed');
         }
         catch (error: any) {
-            assert.match(error.message, /E0/);
+            assert.match(error.type, /E0/);
         }
     });
 });
