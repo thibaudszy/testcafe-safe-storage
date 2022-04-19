@@ -4,9 +4,10 @@
     "uncommittedChanges": true,
     "untrackedFiles": true,
     "sensitiveData": true,
-    "gitTag": true
+    "gitTag": true,
+    "branch": false
   },
-  "confirm": true,
+  "confirm": false,
   "publishTag": "latest",
   "prePublishScript": "npm test"
 }
