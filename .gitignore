@@ -1,5 +1,7 @@
 /.idea
-
+/lib
+/test/lib
+.DS_Store
 # Logs
 logs
 *.log
