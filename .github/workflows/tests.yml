@@ -3,7 +3,7 @@ name: Tests
 on:
   push:
     branches:
-     - master
+     - main
   pull_request_target:
   workflow_dispatch:
 
@@ -26,4 +26,4 @@ jobs:
       - uses: DevExpress/testcafe-build-system/actions/test-npm@main
         with:
           task: test
- 
+ 
