@@ -1,5 +1,5 @@
 class BaseError extends Error {
-    public readonly type: string
+    public readonly type: string;
 
     constructor (message: string, type: string) {
         super(message);
