@@ -2,24 +2,32 @@ import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { MultipleSavedDataNotDetected, SavedDataNotDetected } from './errors';
+import { MultipleSavedDataDetected, SavedDataNotDetected } from './errors';
 
 
-async function ensureDir (filename: string): Promise<void> {
-    await fs.promises.mkdir(path.dirname(filename), { recursive: true });
-}
+export const STORAGE_DIR = '.tcss';
+export const CRYPTO_DIR  = '.tcpk';
 
 export enum FILE_TYPE {
     STORAGE,
+    NONCE,
+    AUTH_TAG,
     PRIVATE_KEY,
     PASSPHRASE
 }
 
+// TODO: Use OS APIs to secretely store PASSPHRASE, AUTH_TAG, NONCE
 const FILENAME_TEMPLATES = {
-    [FILE_TYPE.STORAGE]:     (seed: string) => path.join(os.homedir(), '.tcss', `storage-${seed}`),
-    [FILE_TYPE.PRIVATE_KEY]: (seed: string) => path.join(os.homedir(), '.tcpk', `pk-${seed}`),
+    [FILE_TYPE.STORAGE]:     (seed: string) => path.join(os.homedir(), STORAGE_DIR, `storage-${seed}`),
+    [FILE_TYPE.NONCE]:       (seed: string) => path.join(os.homedir(), CRYPTO_DIR, `n-${seed}`),
+    [FILE_TYPE.AUTH_TAG]:    (seed: string) => path.join(os.homedir(), CRYPTO_DIR, `at-${seed}`),
+    [FILE_TYPE.PRIVATE_KEY]: (seed: string) => path.join(os.homedir(), CRYPTO_DIR, `pk-${seed}`),
     [FILE_TYPE.PASSPHRASE]:  (seed: string) => path.join(os.homedir(), `.tcpp-${seed}`),
 };
+
+async function ensureDir (filename: string): Promise<void> {
+    await fs.promises.mkdir(path.dirname(filename), { recursive: true });
+}
 
 async function detectNames (type: FILE_TYPE): Promise<string[]> {
     const template = FILENAME_TEMPLATES[type]('');
@@ -37,7 +45,7 @@ async function detectName (type: FILE_TYPE): Promise<string> {
         throw new SavedDataNotDetected();
 
     if (names.length > 1)
-        throw new MultipleSavedDataNotDetected();
+        throw new MultipleSavedDataDetected();
 
     return names[0];
 }

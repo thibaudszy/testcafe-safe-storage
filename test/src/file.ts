@@ -20,7 +20,8 @@ describe('File', () => {
             await load(FILE_TYPE.STORAGE);
         }
         catch (error: any) {
-            assert.match(error.type, /E1/);
+            assert.strictEqual(error.code, 2);
+            assert.strictEqual(error.message, 'Cannot detect the saved data. Make sure the data was saved before loading.');
         }
     });
 
@@ -41,7 +42,8 @@ describe('File', () => {
             await load(FILE_TYPE.STORAGE);
         }
         catch (error: any) {
-            assert.match(error.type, /E2/);
+            assert.strictEqual(error.code, 3);
+            assert.strictEqual(error.message, 'Multiple variants of the saved data detected. Restore the data from backup or regenerate it.');
         }
     });
 });
