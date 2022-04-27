@@ -3,6 +3,6 @@
     "compilerOptions": {
         "outDir": "../lib",
         "declaration": true,
-        "sourceMap": true
+        "inlineSourceMap": true
     }
-}
+}

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "es2016",
+    "target": "es2017",
     "module": "CommonJS",
     "moduleResolution": "Node",
     "esModuleInterop": true,
