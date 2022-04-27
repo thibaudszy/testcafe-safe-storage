@@ -5,6 +5,7 @@ import {
 import CryptoContext from './crypto.js';
 
 import * as errors from './errors.js';
+import hasErrorCode from './utils/has-error-code.js';
 
 
 type ErrorSuppressor = errors.CODES | Function;
@@ -22,20 +23,12 @@ function defaultValidator<T> (a: unknown): a is T {
     return true;
 }
 
-function hasCode(error: unknown): error is { code: unknown } {
-    if (typeof error !== 'object' || !error)
-        return false;
-    
-    return 'code' in error;
-}
-
 function shouldSuppressError (error: unknown, suppressor: ErrorSuppressor) {    
     if (typeof suppressor === 'function') 
         return error instanceof suppressor;
 
-    if (hasCode(error))
+    if (hasErrorCode(error))
         return error.code === suppressor;
-    
 
     return false;
 }

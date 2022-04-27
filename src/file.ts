@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { MultipleSavedDataDetected, SavedDataNotDetected } from './errors';
+import hasErrorCode from './utils/has-error-code';
 
 
 export const STORAGE_DIR = '.tcss';
@@ -29,10 +30,22 @@ async function ensureDir (filename: string): Promise<void> {
     await fs.promises.mkdir(path.dirname(filename), { recursive: true });
 }
 
+async function readNamesDir (path: string) {
+    try {
+        return await fs.promises.readdir(path);
+    }
+    catch (error: unknown) {
+        if (hasErrorCode(error) && error.code === 'ENOENT')
+            throw new SavedDataNotDetected();
+                
+        throw error;
+    }
+}
+
 async function detectNames (type: FILE_TYPE): Promise<string[]> {
-    const template = FILENAME_TEMPLATES[type]('');
-    const dirname  = path.dirname(template);
-    const basenames = await fs.promises.readdir(dirname);
+    const template  = FILENAME_TEMPLATES[type]('');
+    const dirname   =  path.dirname(template);
+    const basenames = await readNamesDir(dirname);
     const filenames = basenames.filter(name => name.includes(path.basename(template)));
 
     return filenames.map(name => path.join(dirname, name));
