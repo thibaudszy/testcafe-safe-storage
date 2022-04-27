@@ -1,6 +1,6 @@
 {
   "name": "testcafe-safe-storage",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Encrypted storage for secrets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
