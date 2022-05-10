@@ -2,17 +2,18 @@ import assert from 'assert';
 import proxyquire from 'proxyquire';
 
 
+function last<T extends any[]> (array: T): T[keyof T] {
+    return array[array.length - 1];
+}
+
 describe('File', () => {
     it('"load" should throw an error when there is no store', async () => {
         const { load, FILE_TYPE } = proxyquire('../../lib/file.js', {
             'fs': {
-                promises: {
-                    readFile:  () => Promise.resolve(Buffer.from('')),
-                    writeFile: () => Promise.resolve(),
-                    readdir:   () => Promise.resolve([]),
-                    rm:        () => Promise.resolve(),
-
-                },
+                readFile:  (...args: any[]) => last(args)(null, Buffer.from('')),
+                writeFile: (...args: any[]) => last(args)(null),
+                readdir:   (...args: any[]) => last(args)(null, []),
+                rm:        (...args: any[]) => last(args)(null),
             },
         });
 
@@ -28,13 +29,11 @@ describe('File', () => {
     it('"load" should throw an error when the target dir cannot be read', async () => {
         const { load, FILE_TYPE } = proxyquire('../../lib/file.js', {
             'fs': {
-                promises: {
-                    readFile:  () => Promise.resolve(Buffer.from('')),
-                    writeFile: () => Promise.resolve(),
-                    rm:        () => Promise.resolve(),
+                readFile:  (...args: any[]) => last(args)(null, Buffer.from('')),
+                writeFile: (...args: any[]) => last(args)(null),
+                rm:        (...args: any[]) => last(args)(null),
 
-                    readdir: () => Promise.reject(Object.assign(new Error('Does not exist'), { code: 'ENOENT' })),
-                },
+                readdir: (...args: any[]) => last(args)(Object.assign(new Error('Does not exist'), { code: 'ENOENT' })),
             },
         });
 
@@ -50,13 +49,11 @@ describe('File', () => {
     it('"load" should rethrow an exisiting error when there is some other problem with the target dir', async () => {
         const { load, FILE_TYPE } = proxyquire('../../lib/file.js', {
             'fs': {
-                promises: {
-                    readFile:  () => Promise.resolve(Buffer.from('')),
-                    writeFile: () => Promise.resolve(),
-                    rm:        () => Promise.resolve(),
+                readFile:  (...args: any[]) => last(args)(null, Buffer.from('')),
+                writeFile: (...args: any[]) => last(args)(null),
+                rm:        (...args: any[]) => last(args)(null),
 
-                    readdir: () => Promise.reject(Object.assign(new Error('Access denied'), { code: 'EACCESS' })),
-                },
+                readdir: (...args: any[]) => last(args)(Object.assign(new Error('Access denied'), { code: 'EACCESS' })),
             },
         });
 
@@ -72,13 +69,10 @@ describe('File', () => {
     it('"load" should throw an error when there are multiple stores', async () => {
         const { load, FILE_TYPE } = proxyquire('../../lib/file.js', {
             'fs': {
-                promises: {
-                    readFile:  () => Promise.resolve(Buffer.from('')),
-                    writeFile: () => Promise.resolve(),
-                    readdir:   () => Promise.resolve(['storage-1', 'storage-2']),
-                    rm:        () => Promise.resolve(),
-
-                },
+                readFile:  (...args: any[]) => last(args)(null, Buffer.from('')),
+                writeFile: (...args: any[]) => last(args)(null),
+                readdir:   (...args: any[]) => last(args)(null, ['storage-1', 'storage-2']),
+                rm:        (...args: any[]) => last(args)(null),
             },
         });
 

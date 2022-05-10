@@ -2,9 +2,16 @@ import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import { promisify } from 'util';
 import { MultipleSavedDataDetected, SavedDataNotDetected } from './errors';
 import hasErrorCode from './utils/has-error-code';
 
+
+const readFile  = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
+const mkdir     = promisify(fs.mkdir);
+const readdir   = promisify(fs.readdir);
+const rm        = promisify(fs.rm);
 
 export const STORAGE_DIR = '.tcss';
 export const CRYPTO_DIR  = '.tcpk';
@@ -27,12 +34,12 @@ const FILENAME_TEMPLATES = {
 };
 
 async function ensureDir (filename: string): Promise<void> {
-    await fs.promises.mkdir(path.dirname(filename), { recursive: true });
+    await mkdir(path.dirname(filename), { recursive: true });
 }
 
 async function readNamesDir (path: string) {
     try {
-        return await fs.promises.readdir(path);
+        return await readdir(path);
     }
     catch (error: unknown) {
         if (hasErrorCode(error) && error.code === 'ENOENT')
@@ -44,7 +51,7 @@ async function readNamesDir (path: string) {
 
 async function detectNames (type: FILE_TYPE): Promise<string[]> {
     const template  = FILENAME_TEMPLATES[type]('');
-    const dirname   =  path.dirname(template);
+    const dirname   = path.dirname(template);
     const basenames = await readNamesDir(dirname);
     const filenames = basenames.filter(name => name.includes(path.basename(template)));
 
@@ -70,9 +77,9 @@ async function generateName (type: FILE_TYPE): Promise<string> {
 export async function load (type: FILE_TYPE): Promise<Buffer> {
     const name = await detectName(type);
 
-    const data = await fs.promises.readFile(name);
+    const data = await readFile(name);
 
-    await rm(name);
+    await remove(name);
 
     return data;
 }
@@ -81,17 +88,17 @@ export async function save (type: FILE_TYPE, data: string | Buffer): Promise<voi
     const name = await generateName(type);
 
     await ensureDir(name);
-    await rmAll(type);
+    await removeAll(type);
 
-    await fs.promises.writeFile(name, data);
+    await writeFile(name, data);
 }
 
-async function rm (name: string): Promise<void> {
-    await fs.promises.rm(name, { force: true });
+async function remove (name: string): Promise<void> {
+    await rm(name, { force: true });
 }
 
-async function rmAll (type: FILE_TYPE): Promise<void> {
+async function removeAll (type: FILE_TYPE): Promise<void> {
     const names = await detectNames(type);
 
-    await Promise.all(names.map(name => rm(name)));
+    await Promise.all(names.map(name => remove(name)));
 }
