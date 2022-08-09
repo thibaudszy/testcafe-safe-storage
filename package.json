@@ -4,6 +4,10 @@
   "description": "Encrypted storage for secrets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevExpress/testcafe-safe-storage.git"
+  },  
   "files": [
     "lib"
   ],
